@@ -1,5 +1,14 @@
 const todoInputElem = document.querySelector(".todo-input");
 const todoListElem = document.querySelector(".todo-list");
+
+const completeTodo = (todoId) => {
+  const newTodos = getAllTodos().map((todo) =>
+    todo.id === todoId ? { ...todo, isCompleted: !todo.isCompleted } : todo
+  );
+  setTodos(newTodos);
+  paintTodos();
+};
+
 const deleteTodo = (todoId) => {
   const newTodos = getAllTodos().filter((todo) => todo.id !== todoId);
   setTodos(newTodos);
@@ -49,6 +58,7 @@ const paintTodos = () => {
 
     const checkboxElem = document.createElement("div");
     checkboxElem.classList.add("checkbox");
+    checkboxElem.addEventListener("click", () => completeTodo(todo.id));
 
     const todoElem = document.createElement("div");
     todoElem.classList.add("todo");
@@ -60,7 +70,7 @@ const paintTodos = () => {
     delBtnEle.innerHTML = "X";
 
     if (todo.isCompleted) {
-      todoItemElem.classList.add("delBtn");
+      todoItemElem.classList.add("checked");
       checkboxElem.innerText = "✔";
     }
 
