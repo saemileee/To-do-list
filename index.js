@@ -1,5 +1,10 @@
 const todoInputElem = document.querySelector(".todo-input");
 const todoListElem = document.querySelector(".todo-list");
+const deleteTodo = (todoId) => {
+  const newTodos = getAllTodos().filter((todo) => todo.id !== todoId);
+  setTodos(newTodos);
+  paintTodos();
+};
 
 let todos = [];
 let id = 0;
@@ -51,6 +56,7 @@ const paintTodos = () => {
 
     const delBtnEle = document.createElement("button");
     delBtnEle.classList.add("delBtn");
+    delBtnEle.addEventListener("click", () => deleteTodo(todo.id));
     delBtnEle.innerHTML = "X";
 
     if (todo.isCompleted) {
