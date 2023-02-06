@@ -1,19 +1,19 @@
 const todoInputElem = document.querySelector(".todo-input");
 const todoListElem = document.querySelector(".todo-list");
+const completeAllBtnElem = document.querySelector(".complete-all-btn");
+const leftItemsElem = document.querySelector(".left-items");
+
+const getActiveTodos = () => {
+  return todos.filter((todo) => todo.isCompleted === false);
+};
+
+const setLeftItems = () => {
+  const leftTodos = getActiveTodos();
+  leftItemsElem.innerHTML = `${leftTodos.length} items left`;
+};
 
 let todos = [];
 let id = 0;
-
-const init = () => {
-  todoInputElem.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      appendTodos(e.target.value);
-      todoInputElem.value = "";
-    }
-  });
-};
-
-init();
 
 const setTodos = (newTodos) => {
   todos = newTodos;
@@ -21,6 +21,54 @@ const setTodos = (newTodos) => {
 
 const getAllTodos = () => {
   return todos;
+};
+
+const getCompletedTodos = () => {
+  return todos.filter((todo) => todo.isCompleted === true);
+};
+
+let isAllCompleted = "";
+
+const setIsAllComplete = (bool) => {
+  isAllCompleted = bool;
+};
+
+const completeAll = () => {
+  completeAllBtnElem.classList.add("checked");
+  const newTodos = getAllTodos().map((todo) => ({
+    ...todo,
+    isCompleted: true,
+  }));
+  setTodos(newTodos);
+};
+
+const incompleteAll = () => {
+  completeAllBtnElem.classList.remove("checked");
+  const newTodos = getAllTodos().map((todo) => ({
+    ...todo,
+    isCompleted: false,
+  }));
+  setTodos(newTodos);
+};
+
+const checkIsAllCompleted = () => {
+  if (getAllTodos().length === getCompletedTodos().length) {
+    setIsAllComplete(true);
+    completeAllBtnElem.classList.add("checked");
+  } else {
+    setIsAllComplete(false);
+    completeAllBtnElem.classList.remove("checked");
+  }
+};
+
+const onClickCompleteAll = () => {
+  if (!getAllTodos().length) return;
+
+  if (isAllCompleted === true) incompleteAll();
+  else completeAll(); //하나라도 체크되어 있다면 completeAll실행
+  setIsAllComplete(!isAllCompleted); //isAllCompleted토글 (false => true)
+  paintTodos();
+  setLeftItems();
 };
 
 const appendTodos = (text) => {
@@ -31,6 +79,15 @@ const appendTodos = (text) => {
     content: text,
   });
   setTodos(newTodos);
+  checkIsAllCompleted();
+  setLeftItems();
+  paintTodos();
+};
+
+const deleteTodo = (todoId) => {
+  const newTodos = getAllTodos().filter((todo) => todo.id !== todoId);
+  setTodos(newTodos);
+  setLeftItems();
   paintTodos();
 };
 
@@ -40,16 +97,11 @@ const completeTodo = (todoId) => {
   );
   setTodos(newTodos);
   paintTodos();
-};
-
-const deleteTodo = (todoId) => {
-  const newTodos = getAllTodos().filter((todo) => todo.id !== todoId);
-  setTodos(newTodos);
-  paintTodos();
+  setLeftItems();
+  checkIsAllCompleted();
 };
 
 const onDblclickTodo = (e, todoId) => {
-  console.log(e);
   const todoElem = e.target;
   const inputText = e.target.innerText;
   const todoItemElem = todoElem.parentNode;
@@ -119,3 +171,17 @@ const paintTodos = () => {
     todoListElem.appendChild(todoItemElem);
   });
 };
+
+const init = () => {
+  todoInputElem.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      appendTodos(e.target.value);
+      todoInputElem.value = "";
+    }
+  });
+
+  completeAllBtnElem.addEventListener("click", onClickCompleteAll);
+  setLeftItems();
+};
+
+init();
