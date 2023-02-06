@@ -2,6 +2,28 @@ const todoInputElem = document.querySelector(".todo-input");
 const todoListElem = document.querySelector(".todo-list");
 const completeAllBtnElem = document.querySelector(".complete-all-btn");
 const leftItemsElem = document.querySelector(".left-items");
+const showAllBtnElem = document.querySelector(".show-all-btn");
+const showActiveBtnElem = document.querySelector(".show-active-btn");
+const showCompletedBtnElem = document.querySelector(".show-completed-btn");
+const clearCompletedBtnElem = document.querySelector(".clear-completed-btn");
+
+let currentShowType = "all"; //all|active|complete
+const setCurrentShowType = (newShowType) => (currentShowType = newShowType);
+
+const onClickShowTodosType = (e) => {
+  const currentBtnElem = e.target;
+  const newShowType = currentBtnElem.dataset.type;
+
+  if (currentShowType === newShowType) return;
+
+  const preBtnElem = document.querySelector(`.show-${currentShowType}-btn`);
+  preBtnElem.classList.remove("selected");
+
+  currentBtnElem.classList.add("selected");
+  setCurrentShowType(newShowType);
+
+  paintTodos();
+};
 
 const getActiveTodos = () => {
   return todos.filter((todo) => todo.isCompleted === false);
@@ -135,41 +157,71 @@ const updateTodo = (text, todoId) => {
   paintTodos();
 };
 
+const clearCompletedTodos = () => {
+  const newTodos = getActiveTodos();
+  setTodos(newTodos);
+  paintTodos();
+};
+
 const paintTodos = () => {
   todoListElem.innerHTML = "";
-  const allTodos = getAllTodos();
 
-  allTodos.forEach((todo) => {
-    const todoItemElem = document.createElement("li");
-    todoItemElem.classList.add("todo-item");
+  switch (currentShowType) {
+    case "all":
+      const allTodos = getAllTodos();
+      allTodos.forEach((todo) => {
+        paintTodo(todo);
+      });
+      break;
+    case "active":
+      const activeTodos = getActiveTodos();
+      activeTodos.forEach((todo) => {
+        paintTodo(todo);
+      });
+      break;
+    case "completed":
+      const completedTodos = getCompletedTodos();
+      completedTodos.forEach((todo) => {
+        paintTodo(todo);
+      });
+      break;
+    default:
+      break;
+  }
+};
 
-    const checkboxElem = document.createElement("div");
-    checkboxElem.classList.add("checkbox");
-    checkboxElem.addEventListener("click", () => completeTodo(todo.id));
+const paintTodo = (todo) => {
+  const todoItemElem = document.createElement("li");
+  todoItemElem.classList.add("todo-item");
 
-    const todoElem = document.createElement("div");
-    todoElem.classList.add("todo");
-    todoElem.innerText = todo.content;
-    todoElem.addEventListener("dblclick", (event) =>
-      onDblclickTodo(event, todo.id)
-    );
+  todoItemElem.setAttribute("data-id", todo.id);
 
-    const delBtnEle = document.createElement("button");
-    delBtnEle.classList.add("delBtn");
-    delBtnEle.addEventListener("click", () => deleteTodo(todo.id));
-    delBtnEle.innerHTML = "X";
+  const checkboxElem = document.createElement("div");
+  checkboxElem.classList.add("checkbox");
+  checkboxElem.addEventListener("click", () => completeTodo(todo.id));
 
-    if (todo.isCompleted) {
-      todoItemElem.classList.add("checked");
-      checkboxElem.innerText = "✔";
-    }
+  const todoElem = document.createElement("div");
+  todoElem.classList.add("todo");
+  todoElem.innerText = todo.content;
+  todoElem.addEventListener("dblclick", (event) =>
+    onDblclickTodo(event, todo.id)
+  );
 
-    todoItemElem.appendChild(checkboxElem);
-    todoItemElem.appendChild(todoElem);
-    todoItemElem.appendChild(delBtnEle);
+  const delBtnEle = document.createElement("button");
+  delBtnEle.classList.add("delBtn");
+  delBtnEle.addEventListener("click", () => deleteTodo(todo.id));
+  delBtnEle.innerHTML = "X";
 
-    todoListElem.appendChild(todoItemElem);
-  });
+  if (todo.isCompleted) {
+    todoItemElem.classList.add("checked");
+    checkboxElem.innerText = "✔";
+  }
+
+  todoItemElem.appendChild(checkboxElem);
+  todoItemElem.appendChild(todoElem);
+  todoItemElem.appendChild(delBtnEle);
+
+  todoListElem.appendChild(todoItemElem);
 };
 
 const init = () => {
@@ -181,6 +233,10 @@ const init = () => {
   });
 
   completeAllBtnElem.addEventListener("click", onClickCompleteAll);
+  showAllBtnElem.addEventListener("click", onClickShowTodosType);
+  showActiveBtnElem.addEventListener("click", onClickShowTodosType);
+  showCompletedBtnElem.addEventListener("click", onClickShowTodosType);
+  clearCompletedBtnElem.addEventListener("click", clearCompletedTodos);
   setLeftItems();
 };
 
