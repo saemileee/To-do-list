@@ -40,6 +40,16 @@ function deleteCheck(e) {
   //target은 클릭한 html 요소와 클래스 네임을 보여줌, 따라서 classList[0]은 e.target에서 클릭한 클래스 네임이 들어감
   if (item.classList[0] === "trash-btn") {
     const todo = item.parentElement;
-    todo.remove();
+    //Animation (fall하는 애니매이션을 다 보여준 뒤 div 요소를 지워야해서 추가함)
+    todo.classList.add("fall");
+    todo.addEventListener("transitioned", function () {
+      todo.remove();
+    });
+  }
+
+  //CHECK MARK //투두 div 자체를 completed로 만듦
+  if (item.classList[0] === "complete-btn") {
+    const todo = item.parentElement;
+    todo.classList.toggle("completed");
   }
 }
