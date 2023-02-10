@@ -5,6 +5,7 @@ const todoList = document.querySelector(".todo-list");
 
 //Event Listeners
 todoButton.addEventListener("click", addTodo);
+todoList.addEventListener("click", deleteCheck);
 
 //Functions
 function addTodo(event) {
@@ -31,4 +32,14 @@ function addTodo(event) {
   todoDiv.appendChild(trashButton);
   //Clear Todo input value
   todoInput.value = "";
+}
+
+function deleteCheck(e) {
+  const item = e.target;
+  //DELETE TODO
+  //target은 클릭한 html 요소와 클래스 네임을 보여줌, 따라서 classList[0]은 e.target에서 클릭한 클래스 네임이 들어감
+  if (item.classList[0] === "trash-btn") {
+    const todo = item.parentElement;
+    todo.remove();
+  }
 }
