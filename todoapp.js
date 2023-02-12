@@ -50,6 +50,7 @@ function deleteCheck(e) {
     const todo = item.parentElement;
     //Animation
     todo.classList.add("fall");
+    removeLocalTodos(todo);
     // //(fall하는 애니매이션을 다 보여준 뒤 div 요소를 지워야해서 추가함)
     todo.addEventListener("transitionend", function () {
       todo.remove();
@@ -133,4 +134,16 @@ function getTodos() {
     //Append To LIST
     todoList.appendChild(todoDiv);
   });
+}
+
+function removeLocalTodos(todo) {
+  let todos = [];
+  if (localStorage.getItem("todos") === null) {
+    todos = [];
+  } else {
+    todos = JSON.parse(localStorage.getItem("todos"));
+  }
+  const todoIndex = todo.children[0].innerText;
+  todos.splice(todos.indexOf(todoIndex), 1);
+  localStorage.setItem("todos", JSON.stringify(todos));
 }
