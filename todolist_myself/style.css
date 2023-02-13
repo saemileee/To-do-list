@@ -7,11 +7,3 @@
   justify-content: space-between;
 }
 
-.todo-list {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.todo-list .del-btn {
-  justify-content: right;
-}
