@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo List</title>
+    <link rel="stylesheet" href="style.css"></link>
+  </head>
+  <body>
+    <h1>투두리스트</h1>
+    <div class="container">
+      <form class="todo-form">
+        <input type="text" class="todo-input" />
+        <input type="submit" value="추가" />
+      </form>
+      <button class="complete-all-btn">🤔</button>
+      <ul class="todo-tab">
+            <li>전체리스트<span>3개</span></li>
+            <li>완료<span>1개</span></li>
+            <li>미완료<span>2개</span></li>
+      </ul>
+        <ul class="list-contianer">
+            <li class="todo-list">
+                <button class="complete-btn">🤔</button>
+                <div class="todo-content">투두리스트 콘텐츠</div>
+                <button class="del-btn">❌</button>
+            </li>
+            <li class="todo-list">
+                <button class="complete-btn">🤔</button>
+                <div class="todo-content">투두리스트 콘텐츠</div>
+                <button class="del-btn">❌</button>
+            </li>
+        </ul>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>

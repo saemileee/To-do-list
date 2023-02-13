@@ -1,0 +1,17 @@
+.container {
+  width: 600px;
+}
+
+.todo-tab {
+  display: flex;
+  justify-content: space-between;
+}
+
+.todo-list {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.todo-list .del-btn {
+  justify-content: right;
+}
