@@ -1,6 +1,9 @@
 const todoFormElem = document.querySelector(".todo-form");
 const todoInputElem = document.querySelector(".todo-input");
 const todoListContainerElem = document.querySelector(".list-container");
+const allListCount = document.querySelector(".all-count");
+const completedListCount = document.querySelector(".completed-count");
+const uncompletedListCount = document.querySelector(".uncompleted-count");
 
 // class todoData {
 //   constructor(number, isCompleted, content) {
@@ -78,6 +81,7 @@ const paintTodo = (newTodo) => {
         }
       })
     );
+    todoTabPaint(todoDB);
   }
 
   //지우기 기능
@@ -86,10 +90,24 @@ const paintTodo = (newTodo) => {
     const clickedTodoList = e.target.parentElement;
     const clickedTodoListID = clickedTodoList.getAttribute("data-id");
     todoDB = todoDB.filter((todo) => todo.id !== Number(clickedTodoListID));
-    console.log(todoDB);
     clickedTodoList.remove();
+    todoTabPaint(todoDB);
   }
+
+  todoTabPaint(todoDB);
 };
+
+function todoTabPaint(todoDB) {
+  allListCount.innerText = todoDB.length;
+  const completedCount = todoDB.filter(
+    (todo) => todo.isCompleted == true
+  ).length;
+  completedListCount.innerText = completedCount;
+  const uncompletedCount = todoDB.filter(
+    (todo) => todo.isCompleted == false
+  ).length;
+  uncompletedListCount.innerText = uncompletedCount;
+}
 
 function onSubmitTodoForm(e) {
   e.preventDefault();
@@ -98,3 +116,5 @@ function onSubmitTodoForm(e) {
 }
 
 todoFormElem.addEventListener("submit", onSubmitTodoForm);
+
+todoTabPaint(todoDB);
