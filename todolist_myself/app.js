@@ -59,8 +59,8 @@ const paintTodo = (newTodo) => {
 
   todoInputElem.value = "";
 
+  //완료 기능
   completeBtnElem.addEventListener("click", onClickCompleteBtn);
-
   function onClickCompleteBtn(e) {
     const clickedTodoList = e.target.parentElement;
     const clickedTodoListID = clickedTodoList.getAttribute("data-id");
@@ -78,6 +78,16 @@ const paintTodo = (newTodo) => {
         }
       })
     );
+  }
+
+  //지우기 기능
+  delBtnElem.addEventListener("click", onClickDelBtn);
+  function onClickDelBtn(e) {
+    const clickedTodoList = e.target.parentElement;
+    const clickedTodoListID = clickedTodoList.getAttribute("data-id");
+    todoDB = todoDB.filter((todo) => todo.id !== Number(clickedTodoListID));
+    console.log(todoDB);
+    clickedTodoList.remove();
   }
 };
 
