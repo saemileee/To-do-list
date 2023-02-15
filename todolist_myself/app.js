@@ -4,6 +4,7 @@ const todoListContainerElem = document.querySelector(".list-container");
 const allListCount = document.querySelector(".all-count");
 const completedListCount = document.querySelector(".completed-count");
 const uncompletedListCount = document.querySelector(".uncompleted-count");
+const completeAllBtnElem = document.querySelector(".complete-all-btn");
 
 // class todoData {
 //   constructor(number, isCompleted, content) {
@@ -81,6 +82,8 @@ const paintTodo = (newTodo) => {
         }
       })
     );
+
+    //탭 개수
     todoTabPaint(todoDB);
   }
 
@@ -96,6 +99,46 @@ const paintTodo = (newTodo) => {
 
   todoTabPaint(todoDB);
 };
+
+//전체완료기능
+completeAllBtnElem.addEventListener("click", onCompleteAllBtnElem);
+function onCompleteAllBtnElem(todoListElem) {
+  let todoListElems = todoListContainerElem.children;
+
+  const completedCount = todoDB.filter(
+    (todo) => todo.isCompleted == true
+  ).length;
+  const uncompletedCount = todoDB.filter(
+    (todo) => todo.isCompleted == false
+  ).length;
+
+  todoDB.forEach((data) => {
+    if (completedCount == todoDB.length) {
+      data.isCompleted = false;
+      for (let i = 0; i < todoListElems.length; i++) {
+        todoListElems[i].childNodes[0].innerText = "🤔";
+      }
+      completeAllBtnElem.innerText = "😍";
+    } else if (uncompletedCount >= 0) {
+      data.isCompleted = true;
+      for (let i = 0; i < todoListElems.length; i++) {
+        todoListElems[i].childNodes[0].innerText = "😍";
+      }
+      completeAllBtnElem.innerText = "🤔";
+    }
+
+    todoTabPaint(todoDB);
+  });
+
+  // todoDB.forEach((data) => {
+  //   if (completedCount !== todoDB.length) {
+  //     data.isCompleted = false;
+  //     for (let i = 0; i < todoListElems.length; i++) {
+  //       todoListElems[i].childNodes[0].innerText = "🤔";
+  //     }
+  //   }
+  // });
+}
 
 function todoTabPaint(todoDB) {
   allListCount.innerText = todoDB.length;
