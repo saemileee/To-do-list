@@ -39,6 +39,7 @@ const saveTodoData = (newTodo) => {
 const paintTodo = (newTodo) => {
   const todoListElem = document.createElement("li");
   todoListElem.classList.add("todo-list");
+  todoListElem.setAttribute("data-id", todoData.id);
   todoListContainerElem.appendChild(todoListElem);
 
   const completeBtnElem = document.createElement("button");
@@ -61,10 +62,23 @@ const paintTodo = (newTodo) => {
   completeBtnElem.addEventListener("click", onClickCompleteBtn);
 
   function onClickCompleteBtn(e) {
-    completeBtnElem.innerText = "😍";
-    //클릭한 것의 todoData.isCompleted=true로 바뀌어야함
+    const clickedTodoList = e.target.parentElement;
+    const clickedTodoListID = clickedTodoList.getAttribute("data-id");
+    console.log(clickedTodoList);
+    if (
+      todoDB.forEach((data) => {
+        if (data.id == clickedTodoListID) {
+          if (data.isCompleted == false) {
+            data.isCompleted = true;
+            completeBtnElem.innerText = "😍";
+          } else {
+            data.isCompleted = false;
+            completeBtnElem.innerText = "🤔";
+          }
+        }
+      })
+    );
   }
-  
 };
 
 function onSubmitTodoForm(e) {
