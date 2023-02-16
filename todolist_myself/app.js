@@ -5,6 +5,38 @@ const allListCount = document.querySelector(".all-count");
 const completedListCount = document.querySelector(".completed-count");
 const uncompletedListCount = document.querySelector(".uncompleted-count");
 const completeAllBtnElem = document.querySelector(".complete-all-btn");
+const allShowBtnElem = document.querySelector(".all-show-btn");
+const completedShowBtnElem = document.querySelector(".completed-show-btn");
+const uncompletedShowBtnElem = document.querySelector(".uncompleted-show-btn");
+
+completedShowBtnElem.addEventListener("click", onClickCompletedShowBtn);
+uncompletedShowBtnElem.addEventListener("click", onClickUncompletedShowBtn);
+allShowBtnElem.addEventListener("click", onClickAllShowBtnElem);
+
+function onClickAllShowBtnElem() {
+  let todoListElems = todoListContainerElem.children;
+  for (let i = 0; i < todoListElems.length; i++) {
+    todoListElems[i].style.display = "block";
+  }
+}
+
+function onClickCompletedShowBtn() {
+  let todoListElems = todoListContainerElem.children;
+  for (let i = 0; i < todoListElems.length; i++) {
+    todoListElems[i].childNodes[0].innerText == "🤔"
+      ? (todoListElems[i].style.display = "none")
+      : (todoListElems[i].style.display = "block");
+  }
+}
+
+function onClickUncompletedShowBtn() {
+  let todoListElems = todoListContainerElem.children;
+  for (let i = 0; i < todoListElems.length; i++) {
+    todoListElems[i].childNodes[0].innerText == "😍"
+      ? (todoListElems[i].style.display = "none")
+      : (todoListElems[i].style.display = "block");
+  }
+}
 
 let todoData = {
   id: 0,
@@ -18,7 +50,6 @@ let todoDB =
     : JSON.parse(localStorage.getItem("todoDB"));
 const saveTodoData = (newTodo) => {
   const newID = new Date().getTime();
-  // const newID = todoData.id + 1;
   let newTodoData = {
     id: newID,
     isCompleted: false,
@@ -56,7 +87,6 @@ const paintTodo = (newTodo) => {
   function onClickCompleteBtn(e) {
     const clickedTodoList = e.target.parentElement;
     const clickedTodoListID = Number(clickedTodoList.getAttribute("data-id"));
-    console.log(clickedTodoList);
     if (
       todoDB.forEach((data) => {
         if (data.id == clickedTodoListID) {
@@ -122,15 +152,73 @@ function onCompleteAllBtnElem(todoListElem) {
 
     todoTabPaint(todoDB);
   });
+}
 
-  // todoDB.forEach((data) => {
-  //   if (completedCount !== todoDB.length) {
-  //     data.isCompleted = false;
-  //     for (let i = 0; i < todoListElems.length; i++) {
-  //       todoListElems[i].childNodes[0].innerText = "🤔";
-  //     }
-  //   }
-  // });
+function todoDBPaint(todoDB) {
+  todoDB.forEach((todo) => {
+    const todoListElem = document.createElement("li");
+    todoListElem.classList.add("todo-list");
+    todoListElem.setAttribute("data-id", todo.id);
+    todoListContainerElem.appendChild(todoListElem);
+
+    const completeBtnElem = document.createElement("button");
+    completeBtnElem.classList.add("complete-btn");
+    if (todo.isCompleted == false) {
+      completeBtnElem.innerText = "🤔";
+    } else {
+      completeBtnElem.innerText = "😍";
+    }
+    todoListElem.appendChild(completeBtnElem);
+
+    const todoContentElem = document.createElement("div");
+    todoContentElem.classList.add("todo-content");
+    todoContentElem.innerText = todo.content;
+    todoListElem.appendChild(todoContentElem);
+
+    const delBtnElem = document.createElement("button");
+    delBtnElem.classList.add("del-btn");
+    delBtnElem.innerText = "❌";
+    todoListElem.appendChild(delBtnElem);
+
+    todoInputElem.value = "";
+
+    //완료 기능
+    completeBtnElem.addEventListener("click", onClickCompleteBtn);
+    function onClickCompleteBtn(e) {
+      const clickedTodoList = e.target.parentElement;
+      const clickedTodoListID = clickedTodoList.getAttribute("data-id");
+      if (
+        todoDB.forEach((data) => {
+          if (data.id == clickedTodoListID) {
+            if (data.isCompleted == false) {
+              data.isCompleted = true;
+              completeBtnElem.innerText = "😍";
+            } else {
+              data.isCompleted = false;
+              completeBtnElem.innerText = "🤔";
+            }
+          }
+        })
+      );
+
+      //탭 개수
+      todoTabPaint(todoDB);
+      saveLocalTodoData(todoDB);
+    }
+
+    //지우기 기능
+    delBtnElem.addEventListener("click", onClickDelBtn);
+    function onClickDelBtn(e) {
+      const clickedTodoList = e.target.parentElement;
+      const clickedTodoListID = Number(clickedTodoList.getAttribute("data-id"));
+      todoDB = todoDB.filter((todo) => todo.id !== clickedTodoListID);
+      clickedTodoList.remove();
+      todoTabPaint(todoDB);
+      saveLocalTodoData(todoDB);
+    }
+
+    todoTabPaint(todoDB);
+  });
 }
 
 function todoTabPaint() {
@@ -165,6 +253,7 @@ function saveLocalTodoData(todoDB) {
 }
 
 function getLocalTodoData() {
+  // todoDBPaint(todoDB);
   todoDB.forEach((todo) => {
     const todoListElem = document.createElement("li");
     todoListElem.classList.add("todo-list");
@@ -197,7 +286,6 @@ function getLocalTodoData() {
     function onClickCompleteBtn(e) {
       const clickedTodoList = e.target.parentElement;
       const clickedTodoListID = clickedTodoList.getAttribute("data-id");
-      console.log(clickedTodoList);
       if (
         todoDB.forEach((data) => {
           if (data.id == clickedTodoListID) {
@@ -230,7 +318,7 @@ function getLocalTodoData() {
 
     todoTabPaint(todoDB);
   });
-  // todoDB = JSON.parse(localStorage.getItem("todoDB"))
+  todoDB = JSON.parse(localStorage.getItem("todoDB"));
 }
 
 function removeLocaltodos() {}
