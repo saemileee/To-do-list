@@ -6,31 +6,19 @@ const completedListCount = document.querySelector(".completed-count");
 const uncompletedListCount = document.querySelector(".uncompleted-count");
 const completeAllBtnElem = document.querySelector(".complete-all-btn");
 
-// class todoData {
-//   constructor(number, isCompleted, content) {
-//     this.number = 0;
-//     this.isCompleted = false;
-//     this.content = content;
-//   }
-// }
-
-// let todoDB = [];
-
-// const saveTodoData = (newTodo) => {
-//   let newTodoData = new todoData(todoDB.length, false, todoInputElem.value);
-//   todoDB.push(newTodoData);
-// };
-
 let todoData = {
   id: 0,
   isCompleted: false,
   content: String,
 };
 
-let todoDB = [];
-
+let todoDB =
+  localStorage.getItem("todoDB") === null
+    ? (todos = [])
+    : JSON.parse(localStorage.getItem("todoDB"));
 const saveTodoData = (newTodo) => {
-  const newID = todoData.id + 1;
+  const newID = new Date().getTime();
+  // const newID = todoData.id + 1;
   let newTodoData = {
     id: newID,
     isCompleted: false,
@@ -67,7 +55,7 @@ const paintTodo = (newTodo) => {
   completeBtnElem.addEventListener("click", onClickCompleteBtn);
   function onClickCompleteBtn(e) {
     const clickedTodoList = e.target.parentElement;
-    const clickedTodoListID = clickedTodoList.getAttribute("data-id");
+    const clickedTodoListID = Number(clickedTodoList.getAttribute("data-id"));
     console.log(clickedTodoList);
     if (
       todoDB.forEach((data) => {
@@ -85,19 +73,24 @@ const paintTodo = (newTodo) => {
 
     //탭 개수
     todoTabPaint(todoDB);
+    saveLocalTodoData(todoDB);
   }
 
   //지우기 기능
   delBtnElem.addEventListener("click", onClickDelBtn);
   function onClickDelBtn(e) {
     const clickedTodoList = e.target.parentElement;
-    const clickedTodoListID = clickedTodoList.getAttribute("data-id");
-    todoDB = todoDB.filter((todo) => todo.id !== Number(clickedTodoListID));
+    const clickedTodoListID = Number(clickedTodoList.getAttribute("data-id"));
+    todoDB = todoDB.filter((todo) => todo.id !== clickedTodoListID);
     clickedTodoList.remove();
     todoTabPaint(todoDB);
+    saveLocalTodoData(todoDB);
   }
 
   todoTabPaint(todoDB);
+
+  //로컬스토리지 저장
+  saveLocalTodoData(todoDB);
 };
 
 //전체완료기능
@@ -140,15 +133,24 @@ function onCompleteAllBtnElem(todoListElem) {
   // });
 }
 
-function todoTabPaint(todoDB) {
-  allListCount.innerText = todoDB.length;
-  const completedCount = todoDB.filter(
-    (todo) => todo.isCompleted == true
-  ).length;
+function todoTabPaint() {
+  if (todoDB == null) {
+    allListCount.innerText = 0;
+  } else {
+    allListCount.innerText = todoDB.length;
+  }
+
+  const completedCount =
+    todoDB == null
+      ? (allListCount.innerText = 0)
+      : todoDB.filter((todo) => todo.isCompleted == true).length;
+
   completedListCount.innerText = completedCount;
-  const uncompletedCount = todoDB.filter(
-    (todo) => todo.isCompleted == false
-  ).length;
+
+  const uncompletedCount =
+    todoDB == null
+      ? (allListCount.innerText = 0)
+      : todoDB.filter((todo) => todo.isCompleted == false).length;
   uncompletedListCount.innerText = uncompletedCount;
 }
 
@@ -158,6 +160,82 @@ function onSubmitTodoForm(e) {
   paintTodo();
 }
 
+function saveLocalTodoData(todoDB) {
+  localStorage.setItem("todoDB", JSON.stringify(todoDB));
+}
+
+function getLocalTodoData() {
+  todoDB.forEach((todo) => {
+    const todoListElem = document.createElement("li");
+    todoListElem.classList.add("todo-list");
+    todoListElem.setAttribute("data-id", todo.id);
+    todoListContainerElem.appendChild(todoListElem);
+
+    const completeBtnElem = document.createElement("button");
+    completeBtnElem.classList.add("complete-btn");
+    if (todo.isCompleted == false) {
+      completeBtnElem.innerText = "🤔";
+    } else {
+      completeBtnElem.innerText = "😍";
+    }
+    todoListElem.appendChild(completeBtnElem);
+
+    const todoContentElem = document.createElement("div");
+    todoContentElem.classList.add("todo-content");
+    todoContentElem.innerText = todo.content;
+    todoListElem.appendChild(todoContentElem);
+
+    const delBtnElem = document.createElement("button");
+    delBtnElem.classList.add("del-btn");
+    delBtnElem.innerText = "❌";
+    todoListElem.appendChild(delBtnElem);
+
+    todoInputElem.value = "";
+
+    //완료 기능
+    completeBtnElem.addEventListener("click", onClickCompleteBtn);
+    function onClickCompleteBtn(e) {
+      const clickedTodoList = e.target.parentElement;
+      const clickedTodoListID = clickedTodoList.getAttribute("data-id");
+      console.log(clickedTodoList);
+      if (
+        todoDB.forEach((data) => {
+          if (data.id == clickedTodoListID) {
+            if (data.isCompleted == false) {
+              data.isCompleted = true;
+              completeBtnElem.innerText = "😍";
+            } else {
+              data.isCompleted = false;
+              completeBtnElem.innerText = "🤔";
+            }
+          }
+        })
+      );
+
+      //탭 개수
+      todoTabPaint(todoDB);
+      saveLocalTodoData(todoDB);
+    }
+
+    //지우기 기능
+    delBtnElem.addEventListener("click", onClickDelBtn);
+    function onClickDelBtn(e) {
+      const clickedTodoList = e.target.parentElement;
+      const clickedTodoListID = Number(clickedTodoList.getAttribute("data-id"));
+      todoDB = todoDB.filter((todo) => todo.id !== clickedTodoListID);
+      clickedTodoList.remove();
+      todoTabPaint(todoDB);
+      saveLocalTodoData(todoDB);
+    }
+
+    todoTabPaint(todoDB);
+  });
+  // todoDB = JSON.parse(localStorage.getItem("todoDB"))
+}
+
+function removeLocaltodos() {}
+
 todoFormElem.addEventListener("submit", onSubmitTodoForm);
 
+getLocalTodoData();
 todoTabPaint(todoDB);
